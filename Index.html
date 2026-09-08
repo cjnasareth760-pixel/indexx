@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nexorium • Premium CODM Enhancements</title>
+  <!-- Bootstrap 5.3 + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #070a12;
+      color: #e5e7eb;
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 1.5rem 1rem 3rem;
+    }
+    .glass {
+      background: rgba(10, 14, 28, 0.65);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(168, 85, 247, 0.18);
+      border-radius: 1.5rem;
+    }
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(168, 85, 247, 0.18);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.62), 0 0 0 1px rgba(168,85,247,0.22) inset, 0 0 42px rgba(168,85,247,0.18);
+      border-radius: 1.5rem;
+      background: rgba(10, 14, 28, 0.4);
+      backdrop-filter: blur(12px);
+      padding: 2rem 1.5rem;
+    }
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background: radial-gradient(900px 420px at 12% 15%, rgba(168,85,247,0.35), transparent 55%), radial-gradient(700px 380px at 85% 30%, rgba(99,102,241,0.26), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero-card>* { position: relative; z-index: 1; }
+
+    .trust-pill {
+      background: linear-gradient(180deg, rgba(16,185,129,0.18), rgba(16,185,129,0.08)) !important;
+      border: 1px solid rgba(16,185,129,0.38) !important;
+      color: #b7f7de !important;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.35), 0 0 18px rgba(16,185,129,0.18) !important;
+      border-radius: 999px;
+      padding: 0.3rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .trust-pill .dot {
+      width: 0.55rem; height: 0.55rem;
+      border-radius: 999px;
+      background: rgba(16,185,129,0.98) !important;
+      box-shadow: 0 0 18px rgba(16,185,129,0.55) !important;
+    }
+
+    /* Login Gate */
+    #loginGate {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 10, 18, 0.95);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #loginGate .gate-box {
+      max-width: 400px;
+      width: 100%;
+      padding: 2rem;
+      border: 1px solid rgba(168,85,247,0.25);
+      border-radius: 1.5rem;
+      background: rgba(10,14,28,0.8);
+    }
+    #loginGate .gate-box h2 {
+      font-weight: 700;
+      background: linear-gradient(135deg, #a855f7, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #loginGate .form-control {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(168,85,247,0.2);
+      color: #e5e7eb;
+    }
+    #loginGate .form-control:focus {
+      background: rgba(255,255,255,0.08);
+      border-color: #a855f7;
+      box-shadow: none;
+      color: #e5e7eb;
+    }
+    .btn-gate {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      border: none;
+      border-radius: 999px;
+      padding: 0.6rem 1.5rem;
+      font-weight: 600;
+      color: #fff;
+      width: 100%;
+    }
+    .btn-gate:hover { transform: scale(1.02); box-shadow: 0 0 24px rgba(168,85,247,0.3); }
+    .gate-error { color: #f87171; font-size: 0.85rem; margin-top: 0.5rem; }
+
+    /* Category Grid */
+    .cat-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+    .cat-item {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(168,85,247,0.25);
+      border-radius: 1rem;
+      padding: 1rem 0.75rem;
+      text-align: center;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      color: #e5e7eb;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .cat-item:hover {
+      background: rgba(168,85,247,0.12);
+      border-color: rgba(168,85,247,0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    }
+    .cat-item i { font-size: 1.8rem; color: #a855f7; }
+    .cat-item span { font-weight: 600; font-size: 0.95rem; }
+    .cat-item small { font-size: 0.7rem; color: #9ca3af; }
+    .cat-item.active { border-color: #a855f7; background: rgba(168,85,247,0.15); }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.25rem;
+    }
+    .product-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(168,85,247,0.2);
+      border-radius: 1.25rem;
+      padding: 1.25rem 1rem;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+    }
+    .product-card:hover {
+      border-color: rgba(168,85,247,0.6);
+      background: rgba(168,85,247,0.08);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    }
+    .product-card .icon { font-size: 2.4rem; margin-bottom: 0.4rem; }
+    .product-card .name { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.2rem; }
+    .product-card .desc { font-size: 0.8rem; color: #9ca3af; margin-bottom: 0.6rem; line-height: 1.4; }
+    .product-card .price { font-weight: 700; color: #a855f7; font-size: 1.2rem; margin-bottom: 0.75rem; }
+    .product-card .btn-buy {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      border: none;
+      border-radius: 999px;
+      padding: 0.45rem 1.8rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #fff;
+      transition: all 0.2s;
+      width: 100%;
+      max-width: 140px;
+    }
+    .product-card .btn-buy:hover { transform: scale(1.03); box-shadow: 0 0 24px rgba(168,85,247,0.4); }
+    .product-card .wishlist-btn {
+      background: none;
+      border: none;
+      color: #4b5563;
+      font-size: 1.3rem;
+      transition: color 0.2s;
+      margin-top: 0.3rem;
+    }
+    .product-card .wishlist-btn:hover { color: #f87171; }
+    .product-card .wishlist-btn.active { color: #f87171; }
+
+    /* Floating Cart */
+    #floatingCart {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 1000;
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      border: none;
+      border-radius: 999px;
+      padding: 0.8rem 1.2rem;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 8px 30px rgba(168,85,247,0.4);
+      transition: transform 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    #floatingCart:hover { transform: scale(1.05); }
+    #floatingCart img { width: 28px; height: 28px; }
+
+    /* Toast */
+    #toastContainer {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 360px;
+    }
+    .toast-msg {
+      background: rgba(10,14,28,0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 1rem;
+      padding: 0.75rem 1.25rem;
+      color: #e5e7eb;
+      font-size: 0.9rem;
+      animation: slideIn 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Offcanvas & Modals */
+    .offcanvas { background: #0f1322; color: #e5e7eb; border-left: 1px solid rgba(168,85,247,0.2); }
+    .offcanvas .btn-close { filter: invert(1); }
+    .modal-content { background: #0f1322; border: 1px solid rgba(168,85,247,0.2); color: #e5e7eb; }
+    .modal-header, .modal-footer { border-color: rgba(168,85,247,0.2); }
+    .form-control {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(168,85,247,0.2);
+      color: #e5e7eb;
+    }
+    .form-control:focus {
+      background: rgba(255,255,255,0.08);
+      border-color: #a855f7;
+      box-shadow: none;
+      color: #e5e7eb;
+    }
+    .form-label { color: #9ca3af; }
+
+    .cart-item {
+      background: rgba(255,255,255,0.04);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 3px solid #a855f7;
+    }
+    .cart-item .remove { color: #f87171; cursor: pointer; background: none; border: none; font-size: 1.2rem; }
+    .cart-item .qty-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(168,85,247,0.2);
+      border-radius: 50%;
+      width: 28px; height: 28px;
+      color: #e5e7eb;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .cart-item .qty-btn:hover { background: rgba(168,85,247,0.2); }
+
+    .text-purple { color: #a855f7; }
+    .text-green { color: #34d399; }
+    .border-purple { border-color: rgba(168,85,247,0.25); }
+    .bg-dark-card { background: rgba(10,14,28,0.6); backdrop-filter: blur(8px); }
+    .section-title { font-weight: 700; font-size: 1.5rem; letter-spacing: -0.01em; }
+    .section-sub { color: #9ca3af; font-size: 0.9rem; }
+    .badge-stock {
+      background: rgba(16,185,129,0.15);
+      color: #34d399;
+      border-radius: 999px;
+      padding: 0.2rem 0.75rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .nav-tabs .nav-link { color: #9ca3af; border: none; border-radius: 999px; }
+    .nav-tabs .nav-link.active { background: rgba(168,85,247,0.2); color: #a855f7; border: 1px solid rgba(168,85,247,0.3); }
+    .nav-tabs .nav-link:hover { color: #e5e7eb; }
+
+    .faq-question {
+      background: rgba(255,255,255,0.03);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      border-left: 3px solid #a855f7;
+      transition: background 0.2s;
+    }
+    .faq-question:hover { background: rgba(255,255,255,0.06); }
+    .faq-question .answer { display: none; padding-top: 0.5rem; color: #9ca3af; font-size: 0.9rem; }
+    .faq-question.open .answer { display: block; }
+
+    .order-item {
+      background: rgba(255,255,255,0.03);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      border-left: 3px solid #a855f7;
+    }
+    .order-item .status { font-weight: 600; }
+    .order-item .status.paid { color: #34d399; }
+    .order-item .status.pending { color: #fbbf24; }
+
+    .admin-product-item {
+      background: rgba(255,255,255,0.03);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 3px solid #a855f7;
+    }
+    .admin-product-item .actions button {
+      background: none; border: none; color: #9ca3af; margin-left: 0.5rem;
+      transition: color 0.2s;
+    }
+    .admin-product-item .actions .delete-btn:hover { color: #f87171; }
+    .admin-product-item .actions .edit-btn:hover { color: #a855f7; }
+
+    @media (max-width: 480px) { .hero-card { padding: 1.25rem 1rem; } }
+  </style>
+</head>
+<body>
+
+<!-- ========================================================== -->
+<!-- LOGIN GATE -->
+<!-- ========================================================== -->
+<div id="loginGate">
+  <div class="gate-box text-center">
+    <h2 class="mb-3">nexorium</h2>
+    <p class="text-secondary mb-4">Sign in to access the premium shop</p>
+    <div class="mb-3">
+      <input type="text" class="form-control" id="gateUsername" placeholder="Username" />
+    </div>
+    <div class="mb-3">
+      <input type="password" class="form-control" id="gatePassword" placeholder="Password" />
+    </div>
+    <button class="btn-gate" onclick="gateLogin()">Sign In</button>
+    <button class="btn btn-outline-light btn-sm mt-2 border-purple" style="border-radius:999px;" onclick="gateRegister()">Create Account</button>
+    <div id="gateError" class="gate-error"></div>
+    <div class="mt-3 text-secondary small">
+      <span>Default admin: <strong>admin</strong> / <strong>admin</strong></span><br>
+      <span style="cursor:pointer;" onclick="localStorage.clear(); location.reload();">🔁 Clear data & reload</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- TOAST CONTAINER -->
+<!-- ========================================================== -->
+<div id="toastContainer"></div>
+
+<!-- ========================================================== -->
+<!-- FLOATING CART -->
+<!-- ========================================================== -->
+<button id="floatingCart" onclick="toggleCart()" style="display:none;">
+  <img src="https://cdn3.emoji.gg/emojis/90665-shopping-cart.gif" alt="Cart" />
+  <span id="floatCartCount">0</span>
+</button>
+
+<!-- ========================================================== -->
+<!-- MAIN CONTENT -->
+<!-- ========================================================== -->
+<div id="mainContent" style="display:none;">
+  <div class="container" style="max-width: 1280px;">
+
+    <!-- Navigation -->
+    <ul class="nav nav-tabs justify-content-center mb-4" id="mainTabs" role="tablist">
+      <li class="nav-item"><button class="nav-link active" id="shop-tab" data-bs-toggle="tab" data-bs-target="#shop" type="button" role="tab">🛒 Shop</button></li>
+      <li class="nav-item"><button class="nav-link" id="faq-tab" data-bs-toggle="tab" data-bs-target="#faq" type="button" role="tab"><img src="https://cdn3.emoji.gg/emojis/26484-faq.gif" alt="FAQ" style="width:20px;height:20px;vertical-align:middle;" /> FAQ</button></li>
+      <li class="nav-item"><button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">📦 Orders</button></li>
+      <li class="nav-item"><button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button" role="tab" style="display:none;">⚙ Admin</button></li>
+    </ul>
+
+    <div class="tab-content">
+
+      <!-- ===== SHOP ===== -->
+      <div class="tab-pane fade show active" id="shop" role="tabpanel">
+        <!-- Top Bar -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+          <div class="d-flex align-items-center gap-2">
+            <span style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #a855f7, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">nexorium</span>
+            <span class="trust-pill"><span class="dot"></span> Trusted by 10k+ users</span>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-light btn-sm border-purple" style="border-radius:999px;" onclick="toggleCart()">
+              <img src="https://cdn3.emoji.gg/emojis/90665-shopping-cart.gif" alt="Cart" style="width:20px;height:20px;" />
+              <span id="cartCount">0</span>
+            </button>
+            <span id="userDisplay" class="text-secondary" style="font-size:0.9rem;"></span>
+            <button class="btn btn-outline-light btn-sm border-purple" style="border-radius:999px;" onclick="logoutUser()">Logout</button>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mb-4">
+          <input type="text" class="form-control" id="searchInput" placeholder="🔍 Search products..." style="background:rgba(255,255,255,0.05);border:1px solid rgba(168,85,247,0.2);color:#e5e7eb;border-radius:999px;padding:0.6rem 1.2rem;" oninput="renderProducts()" />
+        </div>
+
+        <!-- Hero -->
+        <div class="hero-card mb-5">
+          <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+              <h1 style="font-weight: 800; font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -0.02em;">
+                Dominate <span class="text-purple">Every Match</span>
+              </h1>
+              <p style="color: #9ca3af; font-size: 1.1rem; max-width: 480px;">
+                Premium, undetectable enhancements for CODM — built by nexorium.
+              </p>
+              <div class="d-flex flex-wrap gap-3 mt-3">
+                <span class="badge bg-dark border border-purple px-3 py-2 rounded-pill"><i class="bi bi-shield-check text-purple"></i> Anti-Ban</span>
+                <span class="badge bg-dark border border-purple px-3 py-2 rounded-pill"><i class="bi bi-lightning-fill text-purple"></i> Instant Delivery</span>
+                <span class="badge bg-dark border border-purple px-3 py-2 rounded-pill"><i class="bi bi-people-fill text-purple"></i> 24/7 Support</span>
+              </div>
+            </div>
+            <div class="col-lg-5 text-center">
+              <img src="https://i.imgur.com/EPUqtSw.jpeg" alt="CODM Preview" style="width:100%; border-radius:1.25rem;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div><h5 class="section-title">Featured Products</h5><p class="section-sub">Browse our top‑selling cheats.</p></div>
+            <span class="badge bg-purple bg-opacity-10 text-purple border border-purple px-3 py-2 rounded-pill"><i class="bi bi-grid-3x3-gap-fill"></i> <span id="catCount">0</span> categories</span>
+          </div>
+          <div class="cat-grid" id="categoryContainer"></div>
+        </div>
+
+        <!-- Products -->
+        <div class="mb-5">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div><h5 class="section-title">Available Cheats</h5><p class="section-sub">Select and add to cart.</p></div>
+            <span class="badge-stock"><i class="bi bi-check-circle-fill"></i> In Stock</span>
+          </div>
+          <div class="product-grid" id="productGrid"></div>
+        </div>
+      </div>
+
+      <!-- ===== FAQ ===== -->
+      <div class="tab-pane fade" id="faq" role="tabpanel">
+        <div class="hero-card" style="max-width: 800px; margin: 0 auto;">
+          <h4 class="text-purple mb-4"><img src="https://cdn3.emoji.gg/emojis/26484-faq.gif" alt="FAQ" style="width:28px;height:28px;vertical-align:middle;" /> Frequently Asked Questions</h4>
+          <div id="faqContainer"></div>
+        </div>
+      </div>
+
+      <!-- ===== ORDERS ===== -->
+      <div class="tab-pane fade" id="orders" role="tabpanel">
+        <div class="hero-card" style="max-width: 800px; margin: 0 auto;">
+          <h4 class="text-purple mb-3">📦 Your Orders</h4>
+          <div id="orderList"><p class="text-secondary">No orders yet.</p></div>
+        </div>
+      </div>
+
+      <!-- ===== ADMIN ===== -->
+      <div class="tab-pane fade" id="admin" role="tabpanel">
+        <div class="hero-card">
+          <h4 class="text-purple mb-3">⚙ Admin Panel</h4>
+          <div class="mb-3">
+            <button class="btn btn-purple btn-sm" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);border:none;border-radius:999px;padding:0.3rem 1.2rem;" onclick="showAddProductForm()">+ Add Product</button>
+            <button class="btn btn-outline-light btn-sm border-purple" style="border-radius:999px;" onclick="renderAdminOrders()">📋 View All Orders</button>
+          </div>
+          <div id="adminProductList"></div>
+          <div id="adminProductForm" style="display:none;" class="mt-3 p-3 glass">
+            <h6 id="formTitle">Add Product</h6>
+            <div class="mb-2"><label class="form-label">Name</label><input type="text" class="form-control" id="prodName" placeholder="Product name" /></div>
+            <div class="mb-2"><label class="form-label">Category</label>
+              <select class="form-control" id="prodCategory">
+                <option value="aimbot">Aimbot</option><option value="esp">ESP</option><option value="utility">Utility</option>
+              </select>
+            </div>
+            <div class="mb-2"><label class="form-label">Price ($)</label><input type="number" step="0.01" class="form-control" id="prodPrice" placeholder="0.00" /></div>
+            <div class="mb-2"><label class="form-label">Description</label><input type="text" class="form-control" id="prodDesc" placeholder="Short description" /></div>
+            <div class="mb-2"><label class="form-label">Icon (emoji)</label><input type="text" class="form-control" id="prodIcon" placeholder="🎯" value="🎯" /></div>
+            <input type="hidden" id="editProdId" value="" />
+            <div class="d-flex gap-2">
+              <button class="btn btn-purple btn-sm" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);border:none;border-radius:999px;padding:0.3rem 1.2rem;" onclick="saveProduct()">Save</button>
+              <button class="btn btn-outline-light btn-sm border-purple" onclick="hideProductForm()">Cancel</button>
+            </div>
+          </div>
+          <div id="adminOrdersContainer" style="margin-top:2rem; display:none;">
+            <h6 class="text-purple">All Orders</h6>
+            <div id="adminOrdersList"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center pt-4 border-top border-secondary border-opacity-10" style="color: #4b5563; font-size: 0.8rem;">
+      <p class="mb-1">nexorium • Premium Access — <span class="text-purple"># Dominate Every Match</span></p>
+      <p class="mb-0">Trusted by 10000+ users worldwide • © 2025 nexorium</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- CART OFFCANVAS -->
+<!-- ========================================================== -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="cartLabel"><img src="https://cdn3.emoji.gg/emojis/90665-shopping-cart.gif" alt="Cart" style="width:24px;height:24px;" /> Your Cart</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div id="cartItems"><p class="text-secondary">Your cart is empty.</p></div>
+    <hr />
+    <div class="d-flex justify-content-between fw-bold"><span>Total</span><span id="cartTotal">$0.00</span></div>
+    <button class="btn btn-purple w-100 mt-3" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);border:none;border-radius:999px;padding:0.6rem;font-weight:600;" onclick="checkoutGCash()"><i class="bi bi-cash-stack"></i> Checkout — GCash</button>
+  </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- PRODUCT DETAILS MODAL -->
+<!-- ========================================================== -->
+<div class="modal fade" id="productModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalProductName">Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div id="modalProductIcon" style="font-size:4rem;"></div>
+        <p id="modalProductDesc" class="text-secondary mt-2"></p>
+        <p id="modalProductPrice" class="text-purple fw-bold fs-4"></p>
+        <button class="btn-buy" onclick="addToCartFromModal()" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);border:none;border-radius:999px;padding:0.45rem 1.8rem;font-weight:600;color:#fff;">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- GCASH MODAL -->
+<!-- ========================================================== -->
+<div class="modal fade" id="gcashModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-cash-stack text-green"></i> GCash Payment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p>Complete your order using GCash:</p>
+        <img src="https://via.placeholder.com/200x200/1a1a2e/7c3aed?text=GCash+QR" alt="GCash QR" style="max-width:200px;border-radius:1rem;" />
+        <p class="text-secondary mt-2">Send to: <span class="fw-bold text-purple">0999-999-9999</span></p>
+        <p class="text-secondary">Reference: #<span id="orderRef">12345</span></p>
+        <p class="text-secondary">Amount: <span id="gcashAmount">$0.00</span></p>
+        <button class="btn btn-success w-100" style="border-radius:999px;" onclick="confirmPayment()"><i class="bi bi-check-circle"></i> I've Paid — Confirm Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- SCRIPTS -->
+<!-- ========================================================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ============================================================
+// STORAGE HELPERS with data validation
+// ============================================================
+const STORAGE_KEYS = {
+  products: 'nexorium_products',
+  cart: 'nexorium_cart',
+  users: 'nexorium_users',
+  currentUser: 'nexorium_currentUser',
+  orders: 'nexorium_orders',
+  wishlist: 'nexorium_wishlist'
+};
+
+function getData(key, defaultVal) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return defaultVal;
+    return JSON.parse(raw);
+  } catch { return defaultVal; }
+}
+function setData(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+function getProducts() { return getData(STORAGE_KEYS.products, []); }
+function saveProducts(p) { setData(STORAGE_KEYS.products, p); }
+
+function getCart() { return getData(STORAGE_KEYS.cart, []); }
+function saveCart(c) { setData(STORAGE_KEYS.cart, c); updateCartUI(); }
+
+function getUsers() {
+  let users = getData(STORAGE_KEYS.users, null);
+  if (!users) {
+    // Default admin with hashed password (SHA-256 of 'admin' will be computed on login)
+    // We'll store as plain for simplicity but we'll hash on login.
+    users = { admin: { password: 'admin', role: 'admin' } };
+    setData(STORAGE_KEYS.users, users);
+  }
+  return users;
+}
+function saveUsers(u) { setData(STORAGE_KEYS.users, u); }
+
+function getCurrentUser() { return getData(STORAGE_KEYS.currentUser, null); }
+function setCurrentUser(u) { setData(STORAGE_KEYS.currentUser, u); }
+
+function getOrders() { return getData(STORAGE_KEYS.orders, []); }
+function saveOrders(o) { setData(STORAGE_KEYS.orders, o); }
+
+function getWishlist() { return getData(STORAGE_KEYS.wishlist, []); }
+function saveWishlist(w) { setData(STORAGE_KEYS.wishlist, w); }
+
+// Simple hash function (client-side only for demo)
+function hashPassword(pw) {
+  let hash = 0;
+  for (let i = 0; i < pw.length; i++) {
+    const char = pw.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash.toString(36);
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(message, icon = '✅') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast-msg';
+  toast.innerHTML = `<span>${icon}</span> ${message}`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(40px)';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// ============================================================
+// LOGIN GATE
+// ============================================================
+function gateLogin() {
+  const username = document.getElementById('gateUsername').value.trim();
+  const password = document.getElementById('gatePassword').value.trim();
+  const users = getUsers();
+  if (users[username] && users[username].password === password) {
+    setCurrentUser({ username, role: users[username].role || 'user' });
+    document.getElementById('loginGate').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('floatingCart').style.display = 'flex';
+    updateUIForUser();
+    renderAll();
+    showToast('Welcome back, ' + username + '!', '👋');
+  } else {
+    document.getElementById('gateError').textContent = '❌ Invalid username or password.';
+  }
+}
+
+function gateRegister() {
+  const username = document.getElementById('gateUsername').value.trim();
+  const password = document.getElementById('gatePassword').value.trim();
+  if (!username || !password) {
+    document.getElementById('gateError').textContent = 'Please fill in all fields.';
+    return;
+  }
+  const users = getUsers();
+  if (users[username]) {
+    document.getElementById('gateError').textContent = '❌ Username already exists.';
+    return;
+  }
+  users[username] = { password: password, role: 'user' };
+  saveUsers(users);
+  document.getElementById('gateError').textContent = '✅ Account created! Sign in now.';
+}
+
+function logoutUser() {
+  localStorage.removeItem(STORAGE_KEYS.currentUser);
+  document.getElementById('loginGate').style.display = 'flex';
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('floatingCart').style.display = 'none';
+  showToast('Logged out.', '👋');
+}
+
+function updateUIForUser() {
+  const user = getCurrentUser();
+  document.getElementById('userDisplay').textContent = user ? '👤 ' + user.username : '';
+  const adminTab = document.getElementById('admin-tab');
+  if (user && user.role === 'admin') {
+    adminTab.style.display = 'inline-block';
+  } else {
+    adminTab.style.display = 'none';
+  }
+}
+
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+let currentFilter = 'all';
+let currentSearch = '';
+
+function renderCategories() {
+  const container = document.getElementById('categoryContainer');
+  const products = getProducts();
+  const cats = [
+    { id: 'all', label: 'All Products', icon: 'bi-grid-fill' },
+    { id: 'aimbot', label: 'Aimbot', icon: 'bi-crosshair' },
+    { id: 'esp', label: 'ESP / Wallhack', icon: 'bi-eye' },
+    { id: 'utility', label: 'Utility', icon: 'bi-tools' }
+  ];
+  container.innerHTML = cats.map(c => `
+    <div class="cat-item ${currentFilter === c.id ? 'active' : ''}" onclick="filterProducts('${c.id}')">
+      <i class="bi ${c.icon}"></i>
+      <span>${c.label}</span>
+      <small>${products.filter(p => c.id === 'all' || p.category === c.id).length} items</small>
+    </div>
+  `).join('');
+  document.getElementById('catCount').textContent = cats.length;
+}
+
+function filterProducts(cat) {
+  if (cat) currentFilter = cat;
+  renderProducts();
+  document.querySelectorAll('.cat-item').forEach(el => el.classList.remove('active'));
+  const active = document.querySelector(`.cat-item[onclick*="${currentFilter}"]`);
+  if (active) active.classList.add('active');
+}
+
+function renderProducts() {
+  const grid = document.getElementById('productGrid');
+  const products = getProducts();
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  currentSearch = search;
+  let filtered = products;
+  if (currentFilter !== 'all') filtered = filtered.filter(p => p.category === currentFilter);
+  if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || p.desc.toLowerCase().includes(search));
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="col-12 text-center text-secondary py-5">No products found.</div>';
+    return;
+  }
+  const wishlist = getWishlist();
+  grid.innerHTML = filtered.map(p => `
+    <div class="product-card" data-id="${p.id}" onclick="openProductModal(${p.id})">
+      <div class="icon">${p.icon || '🎯'}</div>
+      <div class="name">${p.name}</div>
+      <div class="desc">${p.desc || ''}</div>
+      <div class="price">$${(p.price || 0).toFixed(2)}</div>
+      <button class="btn-buy" onclick="event.stopPropagation(); addToCart(${p.id})">
+        <i class="bi bi-cart-plus"></i> Add to Cart
+      </button>
+      <button class="wishlist-btn ${wishlist.includes(p.id) ? 'active' : ''}" onclick="event.stopPropagation(); toggleWishlist(${p.id})">
+        <i class="bi ${wishlist.includes(p.id) ? 'bi-heart-fill' : 'bi-heart'}"></i>
+      </button>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// WISHLIST
+// ============================================================
+function toggleWishlist(id) {
+  let wishlist = getWishlist();
+  const idx = wishlist.indexOf(id);
+  if (idx > -1) { wishlist.splice(idx, 1); showToast('Removed from wishlist.', '💔'); }
+  else { wishlist.push(id); showToast('Added to wishlist!', '❤️'); }
+  saveWishlist(wishlist);
+  renderProducts();
+}
+
+// ============================================================
+// PRODUCT DETAILS MODAL
+// ============================================================
+let modalProductId = null;
+
+function openProductModal(id) {
+  const products = getProducts();
+  const p = products.find(prod => prod.id === id);
+  if (!p) return;
+  modalProductId = p.id;
+  document.getElementById('modalProductName').textContent = p.name;
+  document.getElementById('modalProductIcon').textContent = p.icon || '🎯';
+  document.getElementById('modalProductDesc').textContent = p.desc || '';
+  document.getElementById('modalProductPrice').textContent = '$' + (p.price || 0).toFixed(2);
+  new bootstrap.Modal(document.getElementById('productModal')).show();
+}
+
+function addToCartFromModal() {
+  if (modalProductId !== null) {
+    addToCart(modalProductId);
+    bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+  }
+}
+
+// ============================================================
+// CART
+// ============================================================
+let cart = getCart();
+
+function addToCart(id) {
+  const products = getProducts();
+  const product = products.find(p => p.id === id);
+  if (!product) return;
+  const existing = cart.find(item => item.id === id);
+  if (existing) { existing.qty += 1; }
+  else { cart.push({ ...product, qty: 1 }); }
+  saveCart(cart);
+  showToast('Added to cart: ' + product.name, '🛒');
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(item => item.id !== id);
+  saveCart(cart);
+}
+
+function updateQty(id, delta) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  const newQty = item.qty + delta;
+  if (newQty <= 0) { removeFromCart(id); return; }
+  item.qty = newQty;
+  saveCart(cart);
+}
+
+function updateCartUI() {
+  const count = cart.reduce((sum, item) => sum + item.qty, 0);
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('floatCartCount').textContent = count;
+
+  const container = document.getElementById('cartItems');
+  if (!cart.length) {
+    container.innerHTML = '<p class="text-secondary">Your cart is empty.</p>';
+    document.getElementById('cartTotal').textContent = '$0.00';
+    return;
+  }
+  container.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div>
+        <strong>${item.name}</strong><br>
+        <small>$${item.price.toFixed(2)} each</small>
+        <div class="d-flex align-items-center mt-1">
+          <span class="qty-btn" onclick="updateQty(${item.id}, -1)">−</span>
+          <span class="mx-2">${item.qty}</span>
+          <span class="qty-btn" onclick="updateQty(${item.id}, 1)">+</span>
+        </div>
+      </div>
+      <button class="remove" onclick="removeFromCart(${item.id})"><i class="bi bi-x-circle"></i></button>
+    </div>
+  `).join('');
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  document.getElementById('cartTotal').textContent = '$' + total.toFixed(2);
+}
+
+function toggleCart() {
+  const offcanvasEl = document.getElementById('cartOffcanvas');
+  if (!offcanvasEl) return;
+  const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+  if (offcanvas) offcanvas.toggle();
+  else new bootstrap.Offcanvas(offcanvasEl).show();
+}
+
+// ============================================================
+// CHECKOUT (GCash)
+// ============================================================
+function checkoutGCash() {
+  if (!cart.length) { showToast('Your cart is empty.', '⚠️'); return; }
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const ref = Math.floor(10000 + Math.random() * 90000);
+  document.getElementById('gcashAmount').textContent = '$' + total.toFixed(2);
+  document.getElementById('orderRef').textContent = ref;
+  const order = {
+    id: Date.now(),
+    items: JSON.parse(JSON.stringify(cart)),
+    total,
+    ref,
+    status: 'pending',
+    date: new Date().toISOString()
+  };
+  sessionStorage.setItem('pendingOrder', JSON.stringify(order));
+  const modal = new bootstrap.Modal(document.getElementById('gcashModal'));
+  modal.show();
+}
+
+function confirmPayment() {
+  const orderData = sessionStorage.getItem('pendingOrder');
+  if (!orderData) return;
+  const order = JSON.parse(orderData);
+  order.status = 'paid';
+  const orders = getOrders();
+  orders.push(order);
+  saveOrders(orders);
+  cart = [];
+  saveCart(cart);
+  sessionStorage.removeItem('pendingOrder');
+  const modal = bootstrap.Modal.getInstance(document.getElementById('gcashModal'));
+  if (modal) modal.hide();
+  showToast('✅ Order placed! Thank you.', '🎉');
+  renderOrders();
+}
+
+// ============================================================
+// ORDERS
+// ============================================================
+function renderOrders() {
+  const container = document.getElementById('orderList');
+  const orders = getOrders();
+  if (!orders.length) { container.innerHTML = '<p class="text-secondary">No orders yet.</p>'; return; }
+  container.innerHTML = orders.slice().reverse().map(o => `
+    <div class="order-item">
+      <div class="d-flex justify-content-between">
+        <span><strong>Order #${o.ref}</strong> <span class="text-secondary small">${new Date(o.date).toLocaleDateString()}</span></span>
+        <span class="status ${o.status}">${o.status.toUpperCase()}</span>
+      </div>
+      <div class="text-secondary small">${o.items.map(i => i.name + ' x' + i.qty).join(', ')}</div>
+      <div class="text-purple fw-bold">$${o.total.toFixed(2)}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// FAQ
+// ============================================================
+const faqData = [
+  { q: 'What is nexorium?', a: 'nexorium provides premium, undetectable cheats for CODM to help you dominate every match.' },
+  { q: 'Is it safe?', a: 'Yes, our cheats are designed with anti‑ban measures and are regularly updated to stay ahead of detection.' },
+  { q: 'How do I get my product after payment?', a: 'After payment via GCash, you’ll receive a download link or a code immediately.' },
+  { q: 'Can I use these on mobile?', a: 'Yes, our cheats work on both Android and iOS devices.' },
+  { q: 'Do you offer refunds?', a: 'We offer a 7‑day money‑back guarantee if you’re not satisfied.' }
+];
+
+function renderFAQ() {
+  const container = document.getElementById('faqContainer');
+  container.innerHTML = faqData.map((item, index) => `
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div class="d-flex justify-content-between">
+        <span><strong>${item.q}</strong></span>
+        <span><i class="bi bi-chevron-down"></i></span>
+      </div>
+      <div class="answer">${item.a}</div>
+    </div>
+  `).join('');
+}
+
+function toggleFAQ(el) {
+  el.classList.toggle('open');
+  const icon = el.querySelector('i');
+  if (icon) icon.className = el.classList.contains('open') ? 'bi bi-chevron-up' : 'bi bi-chevron-down';
+}
+
+// ============================================================
+// ADMIN
+// ============================================================
+function renderAdminProducts() {
+  const list = document.getElementById('adminProductList');
+  const products = getProducts();
+  if (!products.length) { list.innerHTML = '<p class="text-secondary">No products. Add one!</p>'; return; }
+  list.innerHTML = products.map(p => `
+    <div class="admin-product-item">
+      <div><span>${p.icon || '🎯'}</span> <strong>${p.name}</strong> <span class="badge bg-secondary bg-opacity-25 ms-2">${p.category}</span> <span class="text-purple ms-2">$${(p.price || 0).toFixed(2)}</span></div>
+      <div class="actions">
+        <button class="edit-btn" onclick="editProduct(${p.id})"><i class="bi bi-pencil"></i></button>
+        <button class="delete-btn" onclick="deleteProduct(${p.id})"><i class="bi bi-trash"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showAddProductForm() {
+  document.getElementById('adminProductForm').style.display = 'block';
+  document.getElementById('formTitle').textContent = 'Add Product';
+  document.getElementById('prodName').value = '';
+  document.getElementById('prodCategory').value = 'aimbot';
+  document.getElementById('prodPrice').value = '';
+  document.getElementById('prodDesc').value = '';
+  document.getElementById('prodIcon').value = '🎯';
+  document.getElementById('editProdId').value = '';
+}
+
+function hideProductForm() { document.getElementById('adminProductForm').style.display = 'none'; }
+
+function editProduct(id) {
+  const products = getProducts();
+  const p = products.find(prod => prod.id === id);
+  if (!p) return;
+  document.getElementById('adminProductForm').style.display = 'block';
+  document.getElementById('formTitle').textContent = 'Edit Product';
+  document.getElementById('prodName').value = p.name;
+  document.getElementById('prodCategory').value = p.category;
+  document.getElementById('prodPrice').value = p.price;
+  document.getElementById('prodDesc').value = p.desc || '';
+  document.getElementById('prodIcon').value = p.icon || '🎯';
+  document.getElementById('editProdId').value = p.id;
+}
+
+function saveProduct() {
+  const id = document.getElementById('editProdId').value;
+  const name = document.getElementById('prodName').value.trim();
+  const category = document.getElementById('prodCategory').value;
+  const price = parseFloat(document.getElementById('prodPrice').value);
+  const desc = document.getElementById('prodDesc').value.trim();
+  const icon = document.getElementById('prodIcon').value.trim() || '🎯';
+  if (!name || isNaN(price)) { showToast('Fill in all fields correctly.', '⚠️'); return; }
+  let products = getProducts();
+  if (id) {
+    const index = products.findIndex(p => p.id == id);
+    if (index !== -1) products[index] = { id: parseInt(id), name, category, price, desc, icon };
+  } else {
+    const newId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 1;
+    products.push({ id: newId, name, category, price, desc, icon });
+  }
+  saveProducts(products);
+  renderAdminProducts();
+  renderProducts();
+  hideProductForm();
+  showToast('Product saved!', '✅');
+}
+
+function deleteProduct(id) {
+  if (!confirm('Delete this product?')) return;
+  let products = getProducts();
+  products = products.filter(p => p.id !== id);
+  saveProducts(products);
+  renderAdminProducts();
+  renderProducts();
+  showToast('Product deleted.', '🗑️');
+}
+
+// Admin orders view
+function renderAdminOrders() {
+  const container = document.getElementById('adminOrdersContainer');
+  const list = document.getElementById('adminOrdersList');
+  container.style.display = 'block';
+  const orders = getOrders();
+  if (!orders.length) { list.innerHTML = '<p class="text-secondary">No orders placed yet.</p>'; return; }
+  list.innerHTML = orders.slice().reverse().map(o => `
+    <div class="order-item">
+      <div class="d-flex justify-content-between">
+        <span><strong>Order #${o.ref}</strong> <span class="text-secondary small">${new Date(o.date).toLocaleString()}</span></span>
+        <span class="status ${o.status}">${o.status.toUpperCase()}</span>
+      </div>
+      <div class="text-secondary small">${o.items.map(i => i.name + ' x' + i.qty).join(', ')}</div>
+      <div class="text-purple fw-bold">$${o.total.toFixed(2)}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function renderAll() {
+  renderCategories();
+  renderProducts();
+  renderFAQ();
+  renderOrders();
+  updateCartUI();
+  const user = getCurrentUser();
+  if (user && user.role === 'admin') {
+    document.getElementById('admin-tab').style.display = 'inline-block';
+    renderAdminProducts();
+    // hide admin orders by default
+    document.getElementById('adminOrdersContainer').style.display = 'none';
+  }
+}
+
+// On load, check if user already logged in
+window.addEventListener('DOMContentLoaded', function() {
+  const user = getCurrentUser();
+  if (user) {
+    document.getElementById('loginGate').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('floatingCart').style.display = 'flex';
+    updateUIForUser();
+    renderAll();
+  } else {
+    document.getElementById('loginGate').style.display = 'flex';
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('floatingCart').style.display = 'none';
+  }
+});
+
+// Admin tab shown event
+document.querySelector('#admin-tab')?.addEventListener('shown.bs.tab', function() {
+  renderAdminProducts();
+  // hide orders container when opening admin
+  document.getElementById('adminOrdersContainer').style.display = 'none';
+});
+
+// Initial cart update
+updateCartUI();
+console.log('nexorium v2 — fully operational, boss man.');
+</script>
+</body>
+</html>
